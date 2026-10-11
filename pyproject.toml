@@ -1,0 +1,19 @@
+[project]
+name = "literature-tools"
+version = "0.1.0"
+description = "MCP server for a file-based literature library: metadata lookup and PDF to Markdown conversion"
+readme = "README.md"
+authors = [
+    { name = "Shu Takahashi", email = "7193372+shutallbridge@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "mcp[cli]>=2.3.0",
+]
+
+[project.scripts]
+literature-tools = "literature_tools:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"

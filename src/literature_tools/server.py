@@ -23,6 +23,11 @@
 # In Cowork the agent's shell sees the library at a VM mount path, not the host path
 # get_library returns; the skills find it via the marker's id. Never exchange absolute paths.
 
+import os
+import platform
+import sys
+from pathlib import Path
+
 from mcp.server.mcpserver import MCPServer
 
 INSTRUCTIONS = """\
@@ -41,3 +46,29 @@ Keys: {firstauthor-family}-{year}-{2-4 title words}, lowercase, hyphenated.
 """
 
 mcp = MCPServer("literature-tools", instructions=INSTRUCTIONS)
+
+
+# TEMPORARY: probe where the client runs this server (host vs. VM). Remove once answered.
+@mcp.tool()
+def debug_env() -> dict:
+    """Diagnostic: report where this MCP server process runs (OS, host, user, paths).
+
+    Temporary tool for testing client setups such as Claude Cowork.
+    """
+    home = Path.home()
+    return {
+        "os": platform.system(),
+        "os_release": platform.release(),
+        "machine": platform.machine(),
+        "hostname": platform.node(),
+        "user": os.environ.get("USER") or os.environ.get("USERNAME"),
+        "home": str(home),
+        "cwd": os.getcwd(),
+        "python": sys.executable,
+        "literature_root_env": os.environ.get("LITERATURE_ROOT"),
+        "home_literature_exists": (home / "Literature").exists(),
+        "paths_exist": {p: Path(p).exists() for p in ["/Users", "/sessions", "/mnt"]},
+        "env_names": sorted(
+            k for k in os.environ if k.startswith(("CLAUDE", "COWORK", "MCP"))
+        ),
+    }
